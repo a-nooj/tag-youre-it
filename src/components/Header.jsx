@@ -48,7 +48,7 @@ export default function Header() {
             className="text-2xl md:text-3xl text-foreground leading-tight"
             style={{ fontFamily: 'Fraunces, serif', fontWeight: 700 }}
           >
-            Tag, You're It
+            Tag, You're It!
           </h1>
           <p className="text-sm text-muted-foreground mt-0.5" style={{ fontFamily: 'Nunito, sans-serif' }}>
             Fiducial marker generator — ArUco, AprilTag, ChArUco & Chessboard

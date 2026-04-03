@@ -1,4 +1,4 @@
-# Tag, You're It
+# Tag, You're It!
 
 A client-side fiducial marker generator. Select a marker type, configure parameters, see a live preview, and download in SVG, PNG, or PDF.
 
