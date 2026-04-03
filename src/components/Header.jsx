@@ -2,7 +2,7 @@ import React from 'react';
 
 export default function Header() {
   return (
-    <header className="relative overflow-hidden bg-background border-b border-border/50 py-8 px-6">
+    <header className="relative overflow-hidden bg-background border-b border-border/50 py-8">
       {/* Blob decorations */}
       <div
         className="absolute -top-16 -left-16 w-64 h-64 blur-3xl pointer-events-none"
@@ -26,7 +26,7 @@ export default function Header() {
         }}
       />
 
-      <div className="relative max-w-7xl mx-auto flex items-center gap-4">
+      <div className="relative max-w-7xl mx-auto px-6 flex items-center gap-4">
         {/* Icon */}
         <div
           className="flex-shrink-0 w-12 h-12 flex items-center justify-center rounded-2xl"

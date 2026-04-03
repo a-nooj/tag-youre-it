@@ -8,6 +8,7 @@ import ChessboardConfig from './components/configs/ChessboardConfig.jsx';
 import PreviewCanvas from './components/PreviewCanvas.jsx';
 import DownloadButtons from './components/DownloadButtons.jsx';
 import InfoPanel from './components/InfoPanel.jsx';
+import CameraTab from './components/CameraTab.jsx';
 
 const DEFAULT_CONFIGS = {
   aruco: {
@@ -81,104 +82,86 @@ export default function App() {
     }
   };
 
+  const cardStyle = {
+    background: '#FEFEFA',
+    borderColor: 'rgba(222, 216, 207, 0.5)',
+    boxShadow: '0 4px 20px -2px rgba(93, 112, 82, 0.15)',
+  };
+
   return (
     <div className="min-h-screen bg-background" style={{ fontFamily: 'Nunito, sans-serif' }}>
       <Header />
 
-      <div className="max-w-7xl mx-auto px-4 py-6">
-        <div className="flex flex-col lg:flex-row gap-6">
-          {/* LEFT PANEL */}
-          <aside
-            className="w-full lg:w-80 flex-shrink-0"
-            style={{ position: 'sticky', top: '1.5rem', alignSelf: 'flex-start', maxHeight: 'calc(100vh - 5rem)', overflowY: 'auto' }}
-          >
-            <div
-              className="rounded-3xl border"
-              style={{
-                background: '#FEFEFA',
-                borderColor: 'rgba(222, 216, 207, 0.5)',
-                boxShadow: '0 4px 20px -2px rgba(93, 112, 82, 0.15)',
-                padding: '1.5rem',
-              }}
+      <div className="max-w-7xl mx-auto px-6 py-6">
+        {markerType === 'camera' ? (
+          <CameraTab activeTab={markerType} onTabChange={setMarkerType} />
+        ) : (
+          <div className="flex flex-col lg:flex-row gap-6">
+            {/* LEFT PANEL */}
+            <aside
+              className="w-full lg:w-96 flex-shrink-0"
+              style={{ position: 'sticky', top: '1.5rem', alignSelf: 'flex-start', maxHeight: 'calc(100vh - 5rem)', overflowY: 'auto' }}
             >
-              {/* Marker type tabs */}
-              <div className="mb-5">
-                <MarkerTypeTabs activeTab={markerType} onChange={setMarkerType} />
+              <div className="rounded-3xl border p-6" style={cardStyle}>
+                {/* Marker type tabs */}
+                <div className="mb-5">
+                  <MarkerTypeTabs activeTab={markerType} onChange={setMarkerType} />
+                </div>
+
+                <div className="border-t border-border/40 mb-5" />
+
+                {/* Config fields */}
+                <div className="mb-5">
+                  <h2
+                    className="text-sm font-bold text-foreground mb-4"
+                    style={{ fontFamily: 'Fraunces, serif' }}
+                  >
+                    Configuration
+                  </h2>
+                  {renderConfig()}
+                </div>
+
+                <div className="border-t border-border/40 mb-5" />
+
+                {/* Download */}
+                <div>
+                  <h2
+                    className="text-sm font-bold text-foreground mb-4"
+                    style={{ fontFamily: 'Fraunces, serif' }}
+                  >
+                    Export
+                  </h2>
+                  <DownloadButtons
+                    markerType={markerType}
+                    config={currentConfig}
+                    canvasRef={canvasRef}
+                  />
+                </div>
               </div>
+            </aside>
 
-              {/* Divider */}
-              <div className="border-t border-border/40 mb-5" />
-
-              {/* Config fields */}
-              <div className="mb-5">
+            {/* RIGHT PANEL */}
+            <main className="flex-1 min-w-0 space-y-6">
+              <div className="rounded-3xl border p-8" style={cardStyle}>
                 <h2
-                  className="text-sm font-bold text-foreground mb-4"
-                  style={{ fontFamily: 'Fraunces, serif', fontSize: '0.95rem' }}
+                  className="text-xs font-semibold text-muted-foreground mb-4 uppercase tracking-widest"
+                  style={{ fontFamily: 'Nunito, sans-serif' }}
                 >
-                  Configuration
+                  Live Preview
                 </h2>
-                {renderConfig()}
-              </div>
-
-              {/* Divider */}
-              <div className="border-t border-border/40 mb-5" />
-
-              {/* Download buttons */}
-              <div>
-                <h2
-                  className="text-sm font-bold text-foreground mb-4"
-                  style={{ fontFamily: 'Fraunces, serif', fontSize: '0.95rem' }}
-                >
-                  Export
-                </h2>
-                <DownloadButtons
+                <PreviewCanvas
                   markerType={markerType}
                   config={currentConfig}
-                  canvasRef={canvasRef}
+                  onCanvasReady={handleCanvasReady}
                 />
               </div>
-            </div>
-          </aside>
 
-          {/* RIGHT PANEL */}
-          <main className="flex-1 min-w-0 space-y-6">
-            {/* Preview */}
-            <div
-              className="rounded-3xl border"
-              style={{
-                background: '#FEFEFA',
-                borderColor: 'rgba(222, 216, 207, 0.5)',
-                boxShadow: '0 4px 20px -2px rgba(93, 112, 82, 0.15)',
-                padding: '2rem',
-              }}
-            >
-              <h2
-                className="text-sm font-bold text-muted-foreground mb-4 uppercase tracking-wide"
-                style={{ fontFamily: 'Nunito, sans-serif', fontSize: '0.7rem' }}
-              >
-                Live Preview
-              </h2>
-              <PreviewCanvas
-                markerType={markerType}
-                config={currentConfig}
-                onCanvasReady={handleCanvasReady}
-              />
-            </div>
-
-            {/* Info panel */}
-            <div
-              className="rounded-3xl border"
-              style={{
-                background: '#FEFEFA',
-                borderColor: 'rgba(222, 216, 207, 0.5)',
-                boxShadow: '0 4px 20px -2px rgba(93, 112, 82, 0.15)',
-                padding: '2rem',
-              }}
-            >
-              <InfoPanel markerType={markerType} />
-            </div>
-          </main>
-        </div>
+              <div className="rounded-3xl border p-8" style={cardStyle}>
+                <InfoPanel markerType={markerType} />
+              </div>
+            </main>
+          </div>
+        )}
       </div>
     </div>
   );

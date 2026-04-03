@@ -10,7 +10,6 @@ const DPI_OPTIONS = [72, 150, 300, 600];
 export default function DownloadButtons({ markerType, config, canvasRef }) {
   const [dpi, setDpi] = useState(300);
   const [pdfWidth, setPdfWidth] = useState(50);
-  const [pdfHeight, setPdfHeight] = useState(50);
 
   const getFilename = (ext) => {
     let base = markerType;
@@ -57,8 +56,11 @@ export default function DownloadButtons({ markerType, config, canvasRef }) {
   };
 
   const handlePDF = () => {
-    if (!canvasRef || !canvasRef.current) return;
-    downloadPDF(canvasRef.current, getFilename('pdf'), pdfWidth, pdfHeight);
+    const canvas = canvasRef?.current;
+    if (!canvas) return;
+    const aspect = canvas.height / canvas.width;
+    const pdfHeight = Math.round(pdfWidth * aspect * 10) / 10;
+    downloadPDF(canvas, getFilename('pdf'), pdfWidth, pdfHeight);
   };
 
   const btnBase =
@@ -128,7 +130,7 @@ export default function DownloadButtons({ markerType, config, canvasRef }) {
       {/* Physical size for PDF */}
       <div>
         <label className="block text-xs font-semibold text-muted-foreground mb-2 uppercase tracking-wide">
-          PDF Physical Size (mm)
+          PDF Width (mm) — height auto-scales
         </label>
         <div className="flex gap-2 items-center">
           <input
@@ -138,21 +140,17 @@ export default function DownloadButtons({ markerType, config, canvasRef }) {
             value={pdfWidth}
             onChange={(e) => setPdfWidth(Math.max(5, parseInt(e.target.value) || 50))}
             className="flex-1 px-3 py-2 rounded-full border border-border bg-white/50 text-sm text-foreground outline-none focus:border-primary focus:ring-2 focus:ring-primary/20"
-            placeholder="Width"
+            placeholder="Width mm"
           />
           <span className="text-muted-foreground text-sm font-medium">×</span>
-          <input
-            type="number"
-            min={5}
-            max={1000}
-            value={pdfHeight}
-            onChange={(e) => setPdfHeight(Math.max(5, parseInt(e.target.value) || 50))}
-            className="flex-1 px-3 py-2 rounded-full border border-border bg-white/50 text-sm text-foreground outline-none focus:border-primary focus:ring-2 focus:ring-primary/20"
-            placeholder="Height"
-          />
+          <div className="flex-1 px-3 py-2 rounded-full border border-border/40 bg-muted/40 text-sm text-muted-foreground select-none">
+            {canvasRef?.current
+              ? `${Math.round(pdfWidth * (canvasRef.current.height / canvasRef.current.width) * 10) / 10} mm`
+              : '— mm'}
+          </div>
         </div>
         <p className="text-xs text-muted-foreground mt-1">
-          Common: A4 = 210×297, Letter = 216×279
+          Height is locked to the canvas aspect ratio. A4 width = 210 mm.
         </p>
       </div>
     </div>
