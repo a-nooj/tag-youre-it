@@ -43,12 +43,6 @@ const Icons = {
       <rect x="10" y="10" width="3" height="3" fill="currentColor"/>
     </svg>
   ),
-  camera: (
-    <svg width="15" height="15" viewBox="0 0 15 15" fill="none">
-      <path d="M1 4.5A1.5 1.5 0 012.5 3h1l1-2h5l1 2h1A1.5 1.5 0 0114 4.5v7A1.5 1.5 0 0112.5 13h-10A1.5 1.5 0 011 11.5v-7z" stroke="currentColor" strokeWidth="1.2" fill="none"/>
-      <circle cx="7.5" cy="8" r="2.3" stroke="currentColor" strokeWidth="1.2" fill="none"/>
-    </svg>
-  ),
 };
 
 const TABS = [
@@ -56,7 +50,6 @@ const TABS = [
   { id: 'apriltag',   label: 'AprilTag' },
   { id: 'charuco',    label: 'ChArUco' },
   { id: 'chessboard', label: 'Chessboard' },
-  { id: 'camera',     label: 'Camera' },
 ];
 
 export default function MarkerTypeTabs({ activeTab, onChange }) {

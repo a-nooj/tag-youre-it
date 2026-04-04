@@ -8,7 +8,6 @@ import ChessboardConfig from './components/configs/ChessboardConfig.jsx';
 import PreviewCanvas from './components/PreviewCanvas.jsx';
 import DownloadButtons from './components/DownloadButtons.jsx';
 import InfoPanel from './components/InfoPanel.jsx';
-import CameraTab from './components/CameraTab.jsx';
 
 const DEFAULT_CONFIGS = {
   aruco: {
@@ -93,10 +92,7 @@ export default function App() {
       <Header />
 
       <div className="max-w-7xl mx-auto px-6 py-6">
-        {markerType === 'camera' ? (
-          <CameraTab activeTab={markerType} onTabChange={setMarkerType} />
-        ) : (
-          <div className="flex flex-col lg:flex-row gap-6">
+        <div className="flex flex-col lg:flex-row gap-6">
             {/* LEFT PANEL */}
             <aside
               className="w-full lg:w-96 flex-shrink-0"
@@ -161,7 +157,6 @@ export default function App() {
               </div>
             </main>
           </div>
-        )}
       </div>
     </div>
   );
