@@ -14,12 +14,14 @@
  * arrays with b0 as the MSB of the integer.
  */
 
-import { AR } from 'js-aruco2';
+import 'js-aruco2'; // side-effect: sets globalThis.AR
 import { ARUCO_DICTS } from '../data/aruco_dicts.js';
 
 let injected = false;
 
 export function injectDictsIfNeeded() {
+  const AR = globalThis.AR;
+  if (!AR?.DICTIONARIES) return;
   if (injected) return;
   injected = true;
 

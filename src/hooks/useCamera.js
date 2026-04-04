@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
-import { AR } from 'js-aruco2';
+import 'js-aruco2'; // side-effect: sets globalThis.AR
 import { injectDictsIfNeeded } from '../utils/injectArucoDict.js';
 
 export function useCamera() {
@@ -21,6 +21,7 @@ export function useCamera() {
   useEffect(() => {
     injectDictsIfNeeded();
     try {
+      const AR = globalThis.AR;
       detectorRef.current = new AR.Detector({ dictionaryName: dictName });
     } catch (e) {
       console.error('Detector init failed for', dictName, e);
