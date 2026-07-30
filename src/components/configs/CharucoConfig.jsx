@@ -23,18 +23,29 @@ export default function CharucoConfig({ config, onChange }) {
   // Calculate number of black squares (where markers go)
   const blackSquares = Math.floor((config.squaresX * config.squaresY) / 2);
 
+  // Board-shape/dictionary changes can shrink the marker ID range, so re-clamp startMarkerId
+  const setBoardDims = (key, value) => {
+    const newConfig = { ...config, [key]: value };
+    const newDictSize = ARUCO_DICTS[newConfig.dictName]?.size || 50;
+    const newBlackSquares = Math.floor((newConfig.squaresX * newConfig.squaresY) / 2);
+    const maxStart = Math.max(0, newDictSize - newBlackSquares);
+    newConfig.startMarkerId = Math.min(config.startMarkerId, maxStart);
+    onChange(newConfig);
+  };
+
   return (
     <div className="space-y-4">
       {/* Squares X */}
       <div>
-        <label className={labelClass}>Columns ({config.squaresX})</label>
+        <label htmlFor="charuco-squares-x" className={labelClass}>Columns ({config.squaresX})</label>
         <input
+          id="charuco-squares-x"
           type="range"
           min={3}
           max={12}
           className="w-full mt-1"
           value={config.squaresX}
-          onChange={(e) => set('squaresX', parseInt(e.target.value))}
+          onChange={(e) => setBoardDims('squaresX', parseInt(e.target.value))}
         />
         <div className="flex justify-between text-xs text-muted-foreground mt-0.5">
           <span>3</span><span>6</span><span>9</span><span>12</span>
@@ -43,14 +54,15 @@ export default function CharucoConfig({ config, onChange }) {
 
       {/* Squares Y */}
       <div>
-        <label className={labelClass}>Rows ({config.squaresY})</label>
+        <label htmlFor="charuco-squares-y" className={labelClass}>Rows ({config.squaresY})</label>
         <input
+          id="charuco-squares-y"
           type="range"
           min={3}
           max={12}
           className="w-full mt-1"
           value={config.squaresY}
-          onChange={(e) => set('squaresY', parseInt(e.target.value))}
+          onChange={(e) => setBoardDims('squaresY', parseInt(e.target.value))}
         />
         <div className="flex justify-between text-xs text-muted-foreground mt-0.5">
           <span>3</span><span>6</span><span>9</span><span>12</span>
@@ -59,8 +71,9 @@ export default function CharucoConfig({ config, onChange }) {
 
       {/* Square size */}
       <div>
-        <label className={labelClass}>Square Size (px)</label>
+        <label htmlFor="charuco-square-size" className={labelClass}>Square Size (px)</label>
         <input
+          id="charuco-square-size"
           type="number"
           min={30}
           max={200}
@@ -73,10 +86,11 @@ export default function CharucoConfig({ config, onChange }) {
 
       {/* Marker size ratio */}
       <div>
-        <label className={labelClass}>
+        <label htmlFor="charuco-marker-ratio" className={labelClass}>
           Marker Ratio ({(config.markerRatio * 100).toFixed(0)}% of square)
         </label>
         <input
+          id="charuco-marker-ratio"
           type="range"
           min={50}
           max={80}
@@ -91,11 +105,12 @@ export default function CharucoConfig({ config, onChange }) {
 
       {/* ArUco dictionary */}
       <div>
-        <label className={labelClass}>ArUco Dictionary</label>
+        <label htmlFor="charuco-dict" className={labelClass}>ArUco Dictionary</label>
         <select
+          id="charuco-dict"
           className={inputClass}
           value={config.dictName}
-          onChange={(e) => set('dictName', e.target.value)}
+          onChange={(e) => setBoardDims('dictName', e.target.value)}
         >
           {DICT_OPTIONS.map((d) => (
             <option key={d} value={d}>
@@ -107,8 +122,9 @@ export default function CharucoConfig({ config, onChange }) {
 
       {/* Start marker ID */}
       <div>
-        <label className={labelClass}>Start Marker ID</label>
+        <label htmlFor="charuco-start-marker-id" className={labelClass}>Start Marker ID</label>
         <input
+          id="charuco-start-marker-id"
           type="number"
           min={0}
           max={Math.max(0, (ARUCO_DICTS[config.dictName]?.size || 50) - blackSquares)}
@@ -120,8 +136,9 @@ export default function CharucoConfig({ config, onChange }) {
 
       {/* Border bits */}
       <div>
-        <label className={labelClass}>ArUco Border ({config.borderBits} cell{config.borderBits > 1 ? 's' : ''})</label>
+        <label htmlFor="charuco-border-bits" className={labelClass}>ArUco Border ({config.borderBits} cell{config.borderBits > 1 ? 's' : ''})</label>
         <input
+          id="charuco-border-bits"
           type="range"
           min={1}
           max={2}

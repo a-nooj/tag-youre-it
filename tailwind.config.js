@@ -12,7 +12,7 @@ export default {
         primary: '#5D7052',
         'primary-foreground': '#F3F4F1',
         secondary: '#C18C5D',
-        'secondary-foreground': '#FFFFFF',
+        'secondary-foreground': '#2C2C24',
         accent: '#E6DCCD',
         'accent-foreground': '#4A4A40',
         muted: '#F0EBE5',

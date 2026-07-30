@@ -41,13 +41,12 @@ export default function DownloadButtons({ markerType, config, canvasRef }) {
     return null;
   };
 
+  const svgAvailable = (markerType === 'aruco' || markerType === 'apriltag') && config.mode === 'single';
+
   const handleSVG = () => {
+    if (!svgAvailable) return;
     const svg = getSVGString();
-    if (svg) {
-      downloadSVG(svg, getFilename('svg'));
-    } else {
-      alert('SVG export is only available for single-marker mode (ArUco or AprilTag).');
-    }
+    if (svg) downloadSVG(svg, getFilename('svg'));
   };
 
   const handlePNG = () => {
@@ -64,7 +63,7 @@ export default function DownloadButtons({ markerType, config, canvasRef }) {
   };
 
   const btnBase =
-    'flex-1 flex items-center justify-center gap-2 py-2.5 px-4 rounded-full text-sm font-semibold transition-all hover:scale-105 active:scale-95 border';
+    'flex-1 flex items-center justify-center gap-2 py-2.5 px-4 rounded-full text-sm font-semibold transition-all border';
 
   return (
     <div className="space-y-4">
@@ -73,8 +72,14 @@ export default function DownloadButtons({ markerType, config, canvasRef }) {
         {/* SVG */}
         <button
           onClick={handleSVG}
-          className={`${btnBase} bg-white text-primary border-primary/30 hover:bg-primary hover:text-primary-foreground hover:border-primary`}
-          title="Download SVG (single markers only)"
+          disabled={!svgAvailable}
+          aria-disabled={!svgAvailable}
+          className={`${btnBase} ${
+            svgAvailable
+              ? 'bg-white text-primary border-primary/30 hover:bg-primary hover:text-primary-foreground hover:border-primary hover:scale-105 active:scale-95'
+              : 'bg-white/40 text-muted-foreground border-border cursor-not-allowed opacity-60'
+          }`}
+          title={svgAvailable ? 'Download SVG' : 'SVG export is only available for single-marker ArUco/AprilTag mode'}
         >
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
             <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M7 10l5 5 5-5M12 15V3"/>
@@ -85,7 +90,7 @@ export default function DownloadButtons({ markerType, config, canvasRef }) {
         {/* PNG */}
         <button
           onClick={handlePNG}
-          className={`${btnBase} bg-primary text-primary-foreground border-primary hover:bg-primary/90`}
+          className={`${btnBase} hover:scale-105 active:scale-95 bg-primary text-primary-foreground border-primary hover:bg-primary/90`}
         >
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
             <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M7 10l5 5 5-5M12 15V3"/>
@@ -96,7 +101,7 @@ export default function DownloadButtons({ markerType, config, canvasRef }) {
         {/* PDF */}
         <button
           onClick={handlePDF}
-          className={`${btnBase} bg-secondary text-secondary-foreground border-secondary hover:bg-secondary/90`}
+          className={`${btnBase} hover:scale-105 active:scale-95 bg-secondary text-secondary-foreground border-secondary hover:bg-secondary/90`}
         >
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
             <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M7 10l5 5 5-5M12 15V3"/>
@@ -129,11 +134,12 @@ export default function DownloadButtons({ markerType, config, canvasRef }) {
 
       {/* Physical size for PDF */}
       <div>
-        <label className="block text-xs font-semibold text-muted-foreground mb-2 uppercase tracking-wide">
+        <label htmlFor="pdf-width" className="block text-xs font-semibold text-muted-foreground mb-2 uppercase tracking-wide">
           PDF Width (mm) — height auto-scales
         </label>
         <div className="flex gap-2 items-center">
           <input
+            id="pdf-width"
             type="number"
             min={5}
             max={1000}

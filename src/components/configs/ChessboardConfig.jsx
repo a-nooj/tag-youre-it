@@ -11,8 +11,9 @@ export default function ChessboardConfig({ config, onChange }) {
     <div className="space-y-4">
       {/* Squares X */}
       <div>
-        <label className={labelClass}>Columns ({config.squaresX})</label>
+        <label htmlFor="chessboard-squares-x" className={labelClass}>Columns ({config.squaresX})</label>
         <input
+          id="chessboard-squares-x"
           type="range"
           min={4}
           max={14}
@@ -27,8 +28,9 @@ export default function ChessboardConfig({ config, onChange }) {
 
       {/* Squares Y */}
       <div>
-        <label className={labelClass}>Rows ({config.squaresY})</label>
+        <label htmlFor="chessboard-squares-y" className={labelClass}>Rows ({config.squaresY})</label>
         <input
+          id="chessboard-squares-y"
           type="range"
           min={4}
           max={14}
@@ -43,8 +45,9 @@ export default function ChessboardConfig({ config, onChange }) {
 
       {/* Square size */}
       <div>
-        <label className={labelClass}>Square Size (px)</label>
+        <label htmlFor="chessboard-square-size" className={labelClass}>Square Size (px)</label>
         <input
+          id="chessboard-square-size"
           type="number"
           min={10}
           max={200}
@@ -58,6 +61,7 @@ export default function ChessboardConfig({ config, onChange }) {
       {/* Add border */}
       <div className="flex items-center gap-3">
         <button
+          id="chessboard-border-toggle"
           onClick={() => set('addBorder', !config.addBorder)}
           className={`relative w-10 h-5 rounded-full transition-all ${
             config.addBorder ? 'bg-primary' : 'bg-border'
@@ -70,8 +74,8 @@ export default function ChessboardConfig({ config, onChange }) {
           />
         </button>
         <label
+          htmlFor="chessboard-border-toggle"
           className="text-sm font-semibold text-foreground cursor-pointer"
-          onClick={() => set('addBorder', !config.addBorder)}
         >
           Add white border
         </label>
@@ -79,8 +83,9 @@ export default function ChessboardConfig({ config, onChange }) {
 
       {config.addBorder && (
         <div>
-          <label className={labelClass}>Border Size (px)</label>
+          <label htmlFor="chessboard-border-size" className={labelClass}>Border Size (px)</label>
           <input
+            id="chessboard-border-size"
             type="number"
             min={5}
             max={100}

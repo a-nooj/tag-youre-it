@@ -15,17 +15,21 @@ export default function AprilTagConfig({ config, onChange }) {
     <div className="space-y-4">
       {/* Family */}
       <div>
-        <label className={labelClass}>Tag Family</label>
+        <label htmlFor="apriltag-family" className={labelClass}>Tag Family</label>
         <select
+          id="apriltag-family"
           className={inputClass}
           value={config.family}
           onChange={(e) => {
             const newFamily = APRILTAG_FAMILIES[e.target.value];
             const newMaxId = newFamily ? newFamily.size - 1 : 29;
+            const newSheetStartId = Math.min(config.sheetStartId, newMaxId);
             onChange({
               ...config,
               family: e.target.value,
               tagId: Math.min(config.tagId, newMaxId),
+              sheetStartId: newSheetStartId,
+              sheetCount: Math.min(config.sheetCount, newMaxId - newSheetStartId + 1),
             });
           }}
         >
@@ -60,8 +64,9 @@ export default function AprilTagConfig({ config, onChange }) {
       {config.mode === 'single' ? (
         <>
           <div>
-            <label className={labelClass}>Tag ID (0 – {maxId})</label>
+            <label htmlFor="apriltag-tag-id" className={labelClass}>Tag ID (0 – {maxId})</label>
             <input
+              id="apriltag-tag-id"
               type="number"
               min={0}
               max={maxId}
@@ -72,8 +77,9 @@ export default function AprilTagConfig({ config, onChange }) {
           </div>
 
           <div>
-            <label className={labelClass}>Tag Size (px)</label>
+            <label htmlFor="apriltag-tag-size" className={labelClass}>Tag Size (px)</label>
             <input
+              id="apriltag-tag-size"
               type="number"
               min={50}
               max={1000}
@@ -85,8 +91,9 @@ export default function AprilTagConfig({ config, onChange }) {
           </div>
 
           <div>
-            <label className={labelClass}>Physical Size (mm, for SVG/PDF)</label>
+            <label htmlFor="apriltag-physical-size" className={labelClass}>Physical Size (mm, for SVG/PDF)</label>
             <input
+              id="apriltag-physical-size"
               type="number"
               min={5}
               max={500}
@@ -99,8 +106,9 @@ export default function AprilTagConfig({ config, onChange }) {
       ) : (
         <>
           <div>
-            <label className={labelClass}>Start ID</label>
+            <label htmlFor="apriltag-sheet-start" className={labelClass}>Start ID</label>
             <input
+              id="apriltag-sheet-start"
               type="number"
               min={0}
               max={maxId}
@@ -110,8 +118,9 @@ export default function AprilTagConfig({ config, onChange }) {
             />
           </div>
           <div>
-            <label className={labelClass}>Count (max 50)</label>
+            <label htmlFor="apriltag-sheet-count" className={labelClass}>Count (max 50)</label>
             <input
+              id="apriltag-sheet-count"
               type="number"
               min={1}
               max={Math.min(50, maxId - config.sheetStartId + 1)}
@@ -121,8 +130,9 @@ export default function AprilTagConfig({ config, onChange }) {
             />
           </div>
           <div>
-            <label className={labelClass}>Columns ({config.sheetCols})</label>
+            <label htmlFor="apriltag-sheet-cols" className={labelClass}>Columns ({config.sheetCols})</label>
             <input
+              id="apriltag-sheet-cols"
               type="range"
               min={2}
               max={8}
@@ -135,8 +145,9 @@ export default function AprilTagConfig({ config, onChange }) {
             </div>
           </div>
           <div>
-            <label className={labelClass}>Tag Size (px)</label>
+            <label htmlFor="apriltag-tag-size" className={labelClass}>Tag Size (px)</label>
             <input
+              id="apriltag-tag-size"
               type="number"
               min={40}
               max={400}
@@ -147,8 +158,9 @@ export default function AprilTagConfig({ config, onChange }) {
             />
           </div>
           <div>
-            <label className={labelClass}>Gap (px)</label>
+            <label htmlFor="apriltag-sheet-gap" className={labelClass}>Gap (px)</label>
             <input
+              id="apriltag-sheet-gap"
               type="number"
               min={0}
               max={50}

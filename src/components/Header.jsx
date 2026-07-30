@@ -57,8 +57,11 @@ export default function Header() {
 
         {/* Badge */}
         <div className="ml-auto hidden sm:flex items-center gap-2">
-          <span
-            className="px-3 py-1 text-xs font-semibold rounded-full"
+          <a
+            href="https://github.com/a-nooj/tag-youre-it"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="px-3 py-1 text-xs font-semibold rounded-full hover:opacity-80 transition-opacity"
             style={{
               background: 'rgba(93, 112, 82, 0.1)',
               color: '#5D7052',
@@ -66,7 +69,7 @@ export default function Header() {
             }}
           >
             Open Source
-          </span>
+          </a>
         </div>
       </div>
     </header>

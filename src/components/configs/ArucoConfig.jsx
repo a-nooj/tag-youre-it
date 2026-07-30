@@ -27,17 +27,22 @@ export default function ArucoConfig({ config, onChange }) {
     <div className="space-y-4">
       {/* Dictionary */}
       <div>
-        <label className={labelClass}>Dictionary</label>
+        <label htmlFor="aruco-dict" className={labelClass}>Dictionary</label>
         <select
+          id="aruco-dict"
           className={inputClass}
           value={config.dictName}
           onChange={(e) => {
-            const newDict = ARUCO_DICTS[e.target.value];
-            set('dictName', e.target.value);
-            // Clamp marker ID if out of range
-            if (config.markerId >= newDict.size) {
-              onChange({ ...config, dictName: e.target.value, markerId: 0 });
-            }
+            const newDictName = e.target.value;
+            const newMaxId = ARUCO_DICTS[newDictName].size - 1;
+            const newSheetStartId = Math.min(config.sheetStartId, newMaxId);
+            onChange({
+              ...config,
+              dictName: newDictName,
+              markerId: Math.min(config.markerId, newMaxId),
+              sheetStartId: newSheetStartId,
+              sheetCount: Math.min(config.sheetCount, newMaxId - newSheetStartId + 1),
+            });
           }}
         >
           {DICT_OPTIONS.map((d) => (
@@ -72,8 +77,9 @@ export default function ArucoConfig({ config, onChange }) {
         <>
           {/* Marker ID */}
           <div>
-            <label className={labelClass}>Marker ID (0 – {maxId})</label>
+            <label htmlFor="aruco-marker-id" className={labelClass}>Marker ID (0 – {maxId})</label>
             <input
+              id="aruco-marker-id"
               type="number"
               min={0}
               max={maxId}
@@ -85,8 +91,9 @@ export default function ArucoConfig({ config, onChange }) {
 
           {/* Marker size */}
           <div>
-            <label className={labelClass}>Marker Size (px)</label>
+            <label htmlFor="aruco-marker-size" className={labelClass}>Marker Size (px)</label>
             <input
+              id="aruco-marker-size"
               type="number"
               min={50}
               max={1000}
@@ -99,8 +106,9 @@ export default function ArucoConfig({ config, onChange }) {
 
           {/* Physical size mm */}
           <div>
-            <label className={labelClass}>Physical Size (mm, for SVG/PDF)</label>
+            <label htmlFor="aruco-physical-size" className={labelClass}>Physical Size (mm, for SVG/PDF)</label>
             <input
+              id="aruco-physical-size"
               type="number"
               min={5}
               max={500}
@@ -112,8 +120,9 @@ export default function ArucoConfig({ config, onChange }) {
 
           {/* Border bits */}
           <div>
-            <label className={labelClass}>Border Width ({config.borderBits} cell{config.borderBits > 1 ? 's' : ''})</label>
+            <label htmlFor="aruco-border-bits" className={labelClass}>Border Width ({config.borderBits} cell{config.borderBits > 1 ? 's' : ''})</label>
             <input
+              id="aruco-border-bits"
               type="range"
               min={1}
               max={4}
@@ -130,8 +139,9 @@ export default function ArucoConfig({ config, onChange }) {
         <>
           {/* Sheet mode */}
           <div>
-            <label className={labelClass}>Start ID</label>
+            <label htmlFor="aruco-sheet-start" className={labelClass}>Start ID</label>
             <input
+              id="aruco-sheet-start"
               type="number"
               min={0}
               max={maxId}
@@ -141,8 +151,9 @@ export default function ArucoConfig({ config, onChange }) {
             />
           </div>
           <div>
-            <label className={labelClass}>Count (max 50)</label>
+            <label htmlFor="aruco-sheet-count" className={labelClass}>Count (max 50)</label>
             <input
+              id="aruco-sheet-count"
               type="number"
               min={1}
               max={Math.min(50, maxId - config.sheetStartId + 1)}
@@ -152,8 +163,9 @@ export default function ArucoConfig({ config, onChange }) {
             />
           </div>
           <div>
-            <label className={labelClass}>Columns ({config.sheetCols})</label>
+            <label htmlFor="aruco-sheet-cols" className={labelClass}>Columns ({config.sheetCols})</label>
             <input
+              id="aruco-sheet-cols"
               type="range"
               min={2}
               max={8}
@@ -166,8 +178,9 @@ export default function ArucoConfig({ config, onChange }) {
             </div>
           </div>
           <div>
-            <label className={labelClass}>Marker Size (px)</label>
+            <label htmlFor="aruco-marker-size" className={labelClass}>Marker Size (px)</label>
             <input
+              id="aruco-marker-size"
               type="number"
               min={40}
               max={400}
@@ -178,8 +191,9 @@ export default function ArucoConfig({ config, onChange }) {
             />
           </div>
           <div>
-            <label className={labelClass}>Gap (px)</label>
+            <label htmlFor="aruco-sheet-gap" className={labelClass}>Gap (px)</label>
             <input
+              id="aruco-sheet-gap"
               type="number"
               min={0}
               max={50}
@@ -189,8 +203,9 @@ export default function ArucoConfig({ config, onChange }) {
             />
           </div>
           <div>
-            <label className={labelClass}>Border Width ({config.borderBits} cell{config.borderBits > 1 ? 's' : ''})</label>
+            <label htmlFor="aruco-border-bits" className={labelClass}>Border Width ({config.borderBits} cell{config.borderBits > 1 ? 's' : ''})</label>
             <input
+              id="aruco-border-bits"
               type="range"
               min={1}
               max={4}
