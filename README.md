@@ -37,3 +37,7 @@ Dictionary bit patterns are taken directly from the canonical upstream sources:
 ## Tech stack
 
 Vite · React 18 · Tailwind CSS v3 · jsPDF · Lucide React
+
+## License
+
+MIT — see [LICENSE](LICENSE).

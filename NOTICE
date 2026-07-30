@@ -1,0 +1,9 @@
+This project bundles dictionary/family data derived from the following upstream projects:
+
+- ArUco dictionary bit patterns (src/data/aruco_dicts.js) — derived from OpenCV's
+  predefined_dictionaries.hpp, https://github.com/opencv/opencv (Apache License 2.0).
+
+- AprilTag family data (src/data/apriltag_families.js) — derived from the AprilRobotics
+  apriltag library, https://github.com/AprilRobotics/apriltag (BSD 2-Clause License).
+
+See each project's repository for the full license text.
