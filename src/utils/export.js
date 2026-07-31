@@ -144,15 +144,73 @@ export function downloadPNG(canvas, filename, dpi = 96) {
   URL.revokeObjectURL(url);
 }
 
-export function downloadPDF(canvas, filename, physicalWidthMm, physicalHeightMm) {
-  const orientation = physicalWidthMm >= physicalHeightMm ? 'landscape' : 'portrait';
-  const pdf = new jsPDF({
-    orientation,
-    unit: 'mm',
-    format: [physicalWidthMm, physicalHeightMm],
-  });
+// Standard page sizes in mm (portrait dimensions)
+export const PAGE_SIZES = {
+  letter: { w: 215.9, h: 279.4, label: 'Letter' },
+  a4: { w: 210, h: 297, label: 'A4' },
+  a3: { w: 297, h: 420, label: 'A3' },
+  legal: { w: 215.9, h: 355.6, label: 'Legal' },
+};
 
+const round1 = (n) => Math.round(n * 10) / 10;
+
+// Corner registration marks placed just outside the content bounding box so
+// users can confirm the print wasn't rescaled by the print dialog.
+function drawCropMarks(pdf, x, y, w, h) {
+  const gap = 2; // gap between content edge and mark
+  const len = 5; // mark length
+  pdf.setDrawColor(150);
+  pdf.setLineWidth(0.2);
+  const corners = [
+    [x, y, -1, -1],
+    [x + w, y, 1, -1],
+    [x, y + h, -1, 1],
+    [x + w, y + h, 1, 1],
+  ];
+  for (const [cx, cy, sx, sy] of corners) {
+    pdf.line(cx + sx * gap, cy, cx + sx * (gap + len), cy); // horizontal tick
+    pdf.line(cx, cy + sy * gap, cx, cy + sy * (gap + len)); // vertical tick
+  }
+}
+
+export function downloadPDF(canvas, filename, contentWidthMm, contentHeightMm, pageSize = 'letter') {
   const imgData = canvas.toDataURL('image/png');
-  pdf.addImage(imgData, 'PNG', 0, 0, physicalWidthMm, physicalHeightMm);
+  const contentOrientation = contentWidthMm >= contentHeightMm ? 'landscape' : 'portrait';
+
+  // "Fit to marker": page equals the content size, edge-to-edge, no marks.
+  if (pageSize === 'fit') {
+    const pdf = new jsPDF({
+      orientation: contentOrientation,
+      unit: 'mm',
+      format: [contentWidthMm, contentHeightMm],
+    });
+    pdf.addImage(imgData, 'PNG', 0, 0, contentWidthMm, contentHeightMm);
+    pdf.save(filename);
+    return;
+  }
+
+  // Preset paper: place the marker at its true physical size, centered, with
+  // crop marks and a size label so the print can be verified with a ruler.
+  const size = PAGE_SIZES[pageSize] || PAGE_SIZES.letter;
+  const pageW = contentOrientation === 'landscape' ? Math.max(size.w, size.h) : Math.min(size.w, size.h);
+  const pageH = contentOrientation === 'landscape' ? Math.min(size.w, size.h) : Math.max(size.w, size.h);
+
+  const pdf = new jsPDF({ orientation: contentOrientation, unit: 'mm', format: [pageW, pageH] });
+
+  const x = (pageW - contentWidthMm) / 2;
+  const y = (pageH - contentHeightMm) / 2;
+  pdf.addImage(imgData, 'PNG', x, y, contentWidthMm, contentHeightMm);
+
+  drawCropMarks(pdf, x, y, contentWidthMm, contentHeightMm);
+
+  pdf.setFontSize(8);
+  pdf.setTextColor(120);
+  pdf.text(
+    `${round1(contentWidthMm)} × ${round1(contentHeightMm)} mm — print at 100% (Actual size)`,
+    pageW / 2,
+    Math.min(y + contentHeightMm + 8, pageH - 4),
+    { align: 'center' }
+  );
+
   pdf.save(filename);
 }

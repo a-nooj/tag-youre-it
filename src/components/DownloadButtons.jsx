@@ -6,10 +6,18 @@ import { ARUCO_DICTS } from '../data/aruco_dicts.js';
 import { APRILTAG_FAMILIES } from '../data/apriltag_families.js';
 
 const DPI_OPTIONS = [72, 150, 300, 600];
+const PAGE_OPTIONS = [
+  { value: 'letter', label: 'Letter' },
+  { value: 'a4', label: 'A4' },
+  { value: 'a3', label: 'A3' },
+  { value: 'legal', label: 'Legal' },
+  { value: 'fit', label: 'Fit' },
+];
 
 export default function DownloadButtons({ markerType, config, canvasRef }) {
   const [dpi, setDpi] = useState(300);
   const [pdfWidth, setPdfWidth] = useState(50);
+  const [pageSize, setPageSize] = useState('letter');
 
   const getFilename = (ext) => {
     let base = markerType;
@@ -59,7 +67,7 @@ export default function DownloadButtons({ markerType, config, canvasRef }) {
     if (!canvas) return;
     const aspect = canvas.height / canvas.width;
     const pdfHeight = Math.round(pdfWidth * aspect * 10) / 10;
-    downloadPDF(canvas, getFilename('pdf'), pdfWidth, pdfHeight);
+    downloadPDF(canvas, getFilename('pdf'), pdfWidth, pdfHeight, pageSize);
   };
 
   const btnBase =
@@ -132,10 +140,33 @@ export default function DownloadButtons({ markerType, config, canvasRef }) {
         </div>
       </div>
 
+      {/* Page size for PDF */}
+      <div>
+        <label className="block text-xs font-semibold text-muted-foreground mb-2 uppercase tracking-wide">
+          PDF Page Size
+        </label>
+        <div className="flex gap-2">
+          {PAGE_OPTIONS.map((p) => (
+            <button
+              key={p.value}
+              onClick={() => setPageSize(p.value)}
+              className={`flex-1 py-1.5 rounded-full text-xs font-semibold border transition-all
+                ${pageSize === p.value
+                  ? 'bg-secondary text-secondary-foreground border-secondary'
+                  : 'bg-white/50 text-muted-foreground border-border hover:border-secondary/40'
+                }`}
+              title={p.value === 'fit' ? 'Page trimmed exactly to the marker size' : `Marker centered on a ${p.label} page with crop marks`}
+            >
+              {p.label}
+            </button>
+          ))}
+        </div>
+      </div>
+
       {/* Physical size for PDF */}
       <div>
         <label htmlFor="pdf-width" className="block text-xs font-semibold text-muted-foreground mb-2 uppercase tracking-wide">
-          PDF Width (mm) — height auto-scales
+          Marker Width (mm) — height auto-scales
         </label>
         <div className="flex gap-2 items-center">
           <input
@@ -156,7 +187,9 @@ export default function DownloadButtons({ markerType, config, canvasRef }) {
           </div>
         </div>
         <p className="text-xs text-muted-foreground mt-1">
-          Height is locked to the canvas aspect ratio. A4 width = 210 mm.
+          {pageSize === 'fit'
+            ? 'Page is trimmed to the marker. Print at 100% (Actual size) to keep the size accurate.'
+            : 'Marker is centered on the page at this exact size with crop marks. Print at 100% (Actual size).'}
         </p>
       </div>
     </div>
