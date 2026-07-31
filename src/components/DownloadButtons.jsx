@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { downloadSVG, downloadPNG, downloadPDF } from '../utils/export.js';
+import { downloadSVG, downloadPNG, downloadPDF, PAGE_SIZES } from '../utils/export.js';
 import { getArucoSVG } from '../renderers/aruco.js';
 import { getAprilTagSVG } from '../renderers/apriltag.js';
 import { ARUCO_DICTS } from '../data/aruco_dicts.js';
@@ -62,11 +62,22 @@ export default function DownloadButtons({ markerType, config, canvasRef }) {
     downloadPNG(canvasRef.current, getFilename('png'), dpi);
   };
 
+  // Content dimensions in mm, derived from the mm width + canvas aspect.
+  const canvas = canvasRef?.current;
+  const aspect = canvas ? canvas.height / canvas.width : 1;
+  const pdfHeight = Math.round(pdfWidth * aspect * 10) / 10;
+
+  // For a preset page, check the marker actually fits (orientation auto-picks
+  // to match the marker's aspect, so compare long/short edges).
+  const page = PAGE_SIZES[pageSize];
+  const contentLong = Math.max(pdfWidth, pdfHeight);
+  const contentShort = Math.min(pdfWidth, pdfHeight);
+  const pageLong = page ? Math.max(page.w, page.h) : Infinity;
+  const pageShort = page ? Math.min(page.w, page.h) : Infinity;
+  const overflowsPage = pageSize !== 'fit' && (contentLong > pageLong || contentShort > pageShort);
+
   const handlePDF = () => {
-    const canvas = canvasRef?.current;
-    if (!canvas) return;
-    const aspect = canvas.height / canvas.width;
-    const pdfHeight = Math.round(pdfWidth * aspect * 10) / 10;
+    if (!canvas || overflowsPage) return;
     downloadPDF(canvas, getFilename('pdf'), pdfWidth, pdfHeight, pageSize);
   };
 
@@ -109,7 +120,14 @@ export default function DownloadButtons({ markerType, config, canvasRef }) {
         {/* PDF */}
         <button
           onClick={handlePDF}
-          className={`${btnBase} hover:scale-105 active:scale-95 bg-secondary text-secondary-foreground border-secondary hover:bg-secondary/90`}
+          disabled={overflowsPage}
+          aria-disabled={overflowsPage}
+          title={overflowsPage ? `Marker (${pdfWidth} × ${pdfHeight} mm) is larger than the ${PAGE_SIZES[pageSize].label} page. Reduce the width or pick a bigger page / Fit.` : 'Download PDF'}
+          className={`${btnBase} ${
+            overflowsPage
+              ? 'bg-white/40 text-muted-foreground border-border cursor-not-allowed opacity-60'
+              : 'hover:scale-105 active:scale-95 bg-secondary text-secondary-foreground border-secondary hover:bg-secondary/90'
+          }`}
         >
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
             <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M7 10l5 5 5-5M12 15V3"/>
@@ -186,8 +204,10 @@ export default function DownloadButtons({ markerType, config, canvasRef }) {
               : '— mm'}
           </div>
         </div>
-        <p className="text-xs text-muted-foreground mt-1">
-          {pageSize === 'fit'
+        <p className={`text-xs mt-1 ${overflowsPage ? 'text-secondary font-semibold' : 'text-muted-foreground'}`}>
+          {overflowsPage
+            ? `Marker (${pdfWidth} × ${pdfHeight} mm) doesn't fit on ${PAGE_SIZES[pageSize].label}. Reduce the width, choose a larger page, or use Fit.`
+            : pageSize === 'fit'
             ? 'Page is trimmed to the marker. Print at 100% (Actual size) to keep the size accurate.'
             : 'Marker is centered on the page at this exact size with crop marks. Print at 100% (Actual size).'}
         </p>
